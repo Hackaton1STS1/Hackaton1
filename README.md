@@ -1,3 +1,9 @@
+# Main Bio HACKATHON PROJECT
+
+## Below is undo redo library. Run 'python inventory3' to launch the main project itself.
+
+---
+
 #undo.py
 ##A simple way to implement undo/redo in python
 ###Creation:
