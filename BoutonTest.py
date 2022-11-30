@@ -64,7 +64,7 @@ while True:
             #if the mouse is clicked on the
             # button the game is terminated
             if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40:
-                pygame.quit()
+                print("test entered Button")
                 
             #if the mouse is clicked on the
             # button the game is terminated
