@@ -58,6 +58,8 @@ text2 = smallfont.render('Move to' , True , color)
 # this font
 text3 = smallfont.render('Test' , True , color)
 
+#check if textbox is active
+active = False
 
 while True:
 
@@ -69,7 +71,7 @@ while True:
             pygame.quit()
             
         #check if keyboard button is clicked
-        if ev.type == pygame.KEYDOWN:
+        if ev.type == pygame.KEYDOWN and active is True:
             # Check for backspace
             if ev.key == pygame.K_BACKSPACE:
   
@@ -100,6 +102,11 @@ while True:
             # button the game is terminated
             if width/2 <= mouse[0] <= width/2+140 and height/4 <= mouse[1] <= height/4+40:
                 pygame.quit()
+            #Verify if textbox is active
+            if input_rect.collidepoint(ev.pos):
+                active = True
+            else:
+                active = False
         
                   
     # fills the screen with a color
