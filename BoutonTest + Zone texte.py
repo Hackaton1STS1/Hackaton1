@@ -7,7 +7,11 @@ Created on Tue Nov 29 17:04:58 2022
 
 import pygame
 import sys
-  
+import time
+from undo import Undo
+myUndo = Undo()
+a = []
+
   
 # initializing the constructor
 pygame.init()
@@ -77,11 +81,12 @@ while True:
   
                 # get text input from 0 to -1 i.e. end.
                 user_text = user_text[:-1]
-  
+                
             # Unicode standard is used for string
             # formation
             else:
                 user_text += ev.unicode
+                myUndo(a.append, [user_text], [], "letters", a.pop)
             
             if ev.key == pygame.K_RETURN:
                     pygame.quit()
@@ -97,11 +102,14 @@ while True:
             #if the mouse is clicked on the
             # button the game is terminated
             if width/2 <= mouse[0] <= width/2+140 and height/3 <= mouse[1] <= height/3+40:
-                pygame.quit()
+                #pygame.quit()
+                myUndo.redo()
+                user_text = a[(myUndo.redoCount())-1]
             #if the mouse is clicked on the
             # button the game is terminated
             if width/2 <= mouse[0] <= width/2+140 and height/4 <= mouse[1] <= height/4+40:
-                pygame.quit()
+                myUndo.undo()
+                user_text = a[(myUndo.undoCount())-1]
             #Verify if textbox is active
             if input_rect.collidepoint(ev.pos):
                 active = True
@@ -158,3 +166,4 @@ while True:
     
     # updates the frames of the game
     pygame.display.flip()
+    
