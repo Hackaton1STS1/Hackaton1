@@ -55,15 +55,6 @@ class Inventory:
   
   #draw everything
   def draw(self):
-      #print(self.rows,
-      # self.col,
-      # self.items,
-      # self.box_size,
-      # self.x,
-      # self.y,
-      # self.border)
-      
-      #draw background
       pygame.draw.rect(screen,(100,100,100),
         (self.x,self.y,(self.box_size + self.border)*self.col + self.border,(self.box_size + self.border)*self.rows + self.border))
       for x in range(self.col):
@@ -101,7 +92,6 @@ class Inventory:
   
   #check whether the mouse in in the grid
   def In_grid(self,x,y):
-    #print(self.col, self.rows, x, y)
     if 0 > x or x > self.col-1:
       return False
     if 0 > y or y > self.rows-1:
