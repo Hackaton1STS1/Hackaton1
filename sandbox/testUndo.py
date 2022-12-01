@@ -1,6 +1,8 @@
+import sys, os
+sys.path.append(os.path.abspath(os.path.join('..', 'Hackaton1')))
 from time import *
 import unittest
-from undo import *
+from modules.undo import *
 
 #Testing the Undo class.
 class TestUndo(unittest.TestCase):

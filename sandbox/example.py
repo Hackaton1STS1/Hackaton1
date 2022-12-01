@@ -1,5 +1,7 @@
+import sys, os
+sys.path.append(os.path.abspath(os.path.join('..', 'Hackaton1')))
 import time
-from undo import Undo
+from modules.undo import Undo
 myUndo = Undo()
 a = []
 myUndo(a.append, [3], [], "append a number", a.pop)

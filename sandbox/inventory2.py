@@ -1,11 +1,26 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov 30 12:27:42 2022
+
+@author: younn
+"""
+
+import sys, os
+sys.path.append(os.path.abspath(os.path.join('..', 'Hackaton1')))
 import pygame
 import sys
+import time
+from modules.undo import Undo
+myUndo = Undo()
+a = []
+
 
 # initializing the constructor
 pygame.init()
+mouse = pygame.mouse.get_pos()
 
 # screen resolution
-res = (720,720)
+res = (600,600)
 screen = pygame.display.set_mode(res)
   
 # colors & fonts
@@ -55,6 +70,15 @@ class Inventory:
   
   #draw everything
   def draw(self):
+      #print(self.rows,
+      # self.col,
+      # self.items,
+      # self.box_size,
+      # self.x,
+      # self.y,
+      # self.border)
+      
+      #draw background
       pygame.draw.rect(screen,(100,100,100),
         (self.x,self.y,(self.box_size + self.border)*self.col + self.border,(self.box_size + self.border)*self.rows + self.border))
       for x in range(self.col):
@@ -77,6 +101,11 @@ class Inventory:
       y = y//(self.box_size + self.border)
       return (x,y)
 
+  #delete selectionned item last position
+  def Del(self,Item,xy):
+    print("test")
+    items[xy[0]][xy[1]] = None
+
   #add an item/s
   def Add(self,Item,xy):
       x, y = xy
@@ -90,8 +119,10 @@ class Inventory:
       else:
           self.items[x][y] = Item
   
+  
   #check whether the mouse in in the grid
   def In_grid(self,x,y):
+    #print(self.col, self.rows, x, y)
     if 0 > x or x > self.col-1:
       return False
     if 0 > y or y > self.rows-1:
@@ -111,6 +142,7 @@ def isInDimension(screenX, screenY, boxWidth, boxHeight, mouseX, mouseY):
 # Specific-Use Variables
 inventory = Inventory()
 selected = None
+selectedMove = None
 running = True
 
 # Loop of the app
@@ -128,41 +160,95 @@ while running:
 
 
     for ev in pygame.event.get():
-        if ev.type == pygame.QUIT:
-            pygame.quit()
-        ## MAIN AREA
-        if ev.type == pygame.MOUSEBUTTONUP:
+      if ev.type == pygame.QUIT:
+          pygame.quit()
+      ## MAIN AREA
+      if ev.type == pygame.MOUSEBUTTONUP:
+        posInv = inventory.Get_pos()
+        # If Buttondown is Mouse1
+        if ev.button == 1:
+          # Check if clicked Button1
+          if isInDimension(button1['screenX'], button1['screenY'], button1['boxWidth'], button1['boxHeight'], mouse[0], mouse[1]):
+            selected = [Item(0),1]
+          # Check if clicked Button2
+          if isInDimension(button2['screenX'], button2['screenY'], button2['boxWidth'], button2['boxHeight'], mouse[0], mouse[1]):
+            selected = [Item(1),1]
+          # Check if clicked Button3
+          if isInDimension(button3['screenX'], button3['screenY'], button3['boxWidth'], button3['boxHeight'], mouse[0], mouse[1]):
+            selected = [Item(2),1]
+          # Check if clicked Button4
+          if isInDimension(button4['screenX'], button4['screenY'], button4['boxWidth'], button4['boxHeight'], mouse[0], mouse[1]):
+            selected = [Item(3),1]
+          # Check if clicked Button4
+          if isInDimension(button5['screenX'], button5['screenY'], button5['boxWidth'], button5['boxHeight'], mouse[0], mouse[1]):
+            print("Entered Button")
+            
+      if ev.type == pygame.MOUSEBUTTONDOWN:
           posInv = inventory.Get_pos()
           # If Buttondown is Mouse1
           if ev.button == 1:
-            # Check if clicked Button1
-            if isInDimension(button1['screenX'], button1['screenY'], button1['boxWidth'], button1['boxHeight'], mouse[0], mouse[1]):
-              selected = [Item(0),1]
-            # Check if clicked Button2
-            if isInDimension(button2['screenX'], button2['screenY'], button2['boxWidth'], button2['boxHeight'], mouse[0], mouse[1]):
-              selected = [Item(1),1]
-            # Check if clicked Button3
-            if isInDimension(button3['screenX'], button3['screenY'], button3['boxWidth'], button3['boxHeight'], mouse[0], mouse[1]):
-              selected = [Item(2),1]
-            # Check if clicked Button4
-            if isInDimension(button4['screenX'], button4['screenY'], button4['boxWidth'], button4['boxHeight'], mouse[0], mouse[1]):
-              selected = [Item(3),1]
-            # Check if clicked Button4
-            if isInDimension(button5['screenX'], button5['screenY'], button5['boxWidth'], button5['boxHeight'], mouse[0], mouse[1]):
-              print("Entered Button")
+            # Check if click is in the grid and does stuff
+            if inventory.In_grid(posInv[0],posInv[1]):
+              if selected:
+                  selected = inventory.Add(selected,posInv)
+              elif inventory.items[posInv[0]][posInv[1]]:
+                  selected = inventory.items[posInv[0]][posInv[1]]
+                  inventory.items[posInv[0]][posInv[1]] = None
+                  
+          if ev.button == 3:
+            if inventory.In_grid(posInv[0],posInv[1]):
+              if inventory.items[posInv[0]][posInv[1]]:
+                selectedMove = inventory.items[posInv[0]][posInv[1]]
+      if ev.type == pygame.KEYDOWN:
+        if selectedMove != None:
+          if ev.key == pygame.K_RIGHT:
+            #inventory.Del(selected,posInv)
+            inventory.items[posInv[0]][posInv[1]] = None
+            my_list = list(posInv)
+            my_list[0] +=1
+            my_tuple = tuple(my_list)
+            posInv = my_tuple
+            inventory.Add(selectedMove,posInv)
+            #selected= None
+          if ev.key == pygame.K_LEFT:
+            inventory.items[posInv[0]][posInv[1]] = None
+            my_list = list(posInv)
+            my_list[0] -=1
+            my_tuple = tuple(my_list)
+            posInv = my_tuple
+            inventory.Add(selectedMove,posInv)
+            #selected= None
+          if ev.key == pygame.K_DOWN:
+            inventory.items[posInv[0]][posInv[1]] = None
+            my_list = list(posInv)
+            my_list[1] +=1
+            my_tuple = tuple(my_list)
+            posInv = my_tuple
+            inventory.Add(selectedMove,posInv)
+            #selected= None
+          if ev.key == pygame.K_UP:
+            inventory.items[posInv[0]][posInv[1]] = None
+            my_list = list(posInv)
+            my_list[1] -=1
+            my_tuple = tuple(my_list)
+            posInv = my_tuple
+            inventory.Add(selectedMove,posInv)
+            
+          if ev.key == pygame.K_RETURN:
+            selectedMove = None
 
-        if ev.type == pygame.MOUSEBUTTONDOWN:
-            posInv = inventory.Get_pos()
-            # If Buttondown is Mouse1
-            if ev.button == 1:
-              # Check if click is in the grid and does stuff
-              if inventory.In_grid(posInv[0],posInv[1]):
-                if selected:
-                    selected = inventory.Add(selected,posInv)
-                elif inventory.items[posInv[0]][posInv[1]]:
-                    selected = inventory.items[posInv[0]][posInv[1]]
-                    inventory.items[posInv[0]][posInv[1]] = None
-
+                
+            
+                # print(inventory.Get_pos())
+            # TODO: Selectionner la goutte de la grille
+            # Puis de déplacer les gouttes avec les flèches
+            # Droite, Gauche, bas et haut
+          
+            #     selected = inventory.Add(selected,posInv)
+            # elif inventory.items[posInv[0]][posInv[1]]:
+            #     selected = inventory.items[posInv[0]][posInv[1]]
+            #     inventory.items[posInv[0]][posInv[1]] = None
+                    
     ## Out of the event detector
     #-
     # stores the (x,y) coordinates into
