@@ -6,6 +6,7 @@ Created on Wed Nov 30 12:27:42 2022
 """
 
 import sys, os
+sys.path.append(os.path.abspath(os.path.join('..', 'Hackaton1')))
 import pygame
 import sys
 import time
@@ -47,56 +48,6 @@ pygame.draw.circle(items[1],color_green,(25,25),25)
 pygame.draw.circle(items[2],color_blue,(25,25),25)
 pygame.draw.circle(items[3],color_yellow,(25,25),25)
 
-# Dropdown class
-class DropDown():
-  def __init__(self, color_menu, color_option, x, y, w, h, font, main, options):
-      self.color_menu = color_menu
-      self.color_option = color_option
-      self.rect = pygame.Rect(x, y, w, h)
-      self.font = font
-      self.main = main
-      self.options = options
-      self.draw_menu = False
-      self.menu_active = False
-      self.active_option = -1
-
-  def draw(self, surf):
-      pygame.draw.rect(surf, self.color_menu[self.menu_active], self.rect, 0)
-      msg = self.font.render(self.main, 1, (0, 0, 0))
-      surf.blit(msg, msg.get_rect(center = self.rect.center))
-
-      if self.draw_menu:
-          for i, text in enumerate(self.options):
-              rect = self.rect.copy()
-              rect.y += (i+1) * self.rect.height
-              pygame.draw.rect(surf, self.color_option[1 if i == self.active_option else 0], rect, 0)
-              msg = self.font.render(text, 1, (0, 0, 0))
-              surf.blit(msg, msg.get_rect(center = rect.center))
-
-  def update(self, event_list):
-      mpos = pygame.mouse.get_pos()
-      self.menu_active = self.rect.collidepoint(mpos)
-      
-      self.active_option = -1
-      for i in range(len(self.options)):
-          rect = self.rect.copy()
-          rect.y += (i+1) * self.rect.height
-          if rect.collidepoint(mpos):
-              self.active_option = i
-              break
-
-      if not self.menu_active and self.active_option == -1:
-          self.draw_menu = False
-
-      for event in event_list:
-          if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-              if self.menu_active:
-                  self.draw_menu = not self.draw_menu
-              elif self.draw_menu and self.active_option >= 0:
-                  self.draw_menu = False
-                  return self.active_option
-      return -1
-
 # Item class
 class Item:
     def __init__(self,id):
@@ -113,7 +64,6 @@ class Inventory:
       self.col = 9
       self.items = [[None for _ in range(self.rows)] for _ in range(self.col)]
       self.box_size = 40
-      self.foreignIdIncrement = 0
       self.x = 0
       self.y = 0
       self.border = 3
@@ -160,35 +110,34 @@ class Inventory:
   def Add(self,Item,xy):
       x, y = xy
       if self.items[x][y]:
-            print(self.foreignIdIncrement)
-            self.items[x][y][1] = self.foreignIdIncrement
-            temp = self.items[x][y]
-            self.items[x][y] = Item
-            return temp
+          if self.items[x][y][0].id == Item[0].id:
+              self.items[x][y][1] += Item[1]
+          else:
+              temp = self.items[x][y]
+              self.items[x][y] = Item
+              return temp
       else:
           self.items[x][y] = Item
-          self.items[x][y][1] = self.foreignIdIncrement
   
   #checks whether there are drops around itself
   def Check_adjacent(self,x,y):
-    elementCoordinates = []
-    selectedMoves = []
+    elementCoordinates = [] 
     if x < self.rows-1 and self.items[x+1][y] != None:
       elementCoordinates.append([x+1,y])
+      print(self.items[x+1][y])
     if x < self.rows-1 and self.items[x-1][y] != None:
       elementCoordinates.append([x-1,y])
+      print(self.items[x-1][y])
     if y < self.col-1 and self.items[x][y+1] != None:
       elementCoordinates.append([x,y+1])
+      print(self.items[x][y+1])
     if y < self.col-1 and self.items[x][y-1] != None:
       elementCoordinates.append([x,y-1])
+      print(self.items[x][y-1])
+    
     if len(elementCoordinates) != 0:
-      self.foreignIdIncrement += 1
-      for elementCoord in elementCoordinates:
-        self.items[elementCoord[0]][elementCoord[1]][1] = self.foreignIdIncrement
-        selectedMoves.append(self.items[elementCoord[0]][elementCoord[1]])
-      if (self.items[x][y] != None):
-        self.items[x][y][1] = self.foreignIdIncrement
-    return (selectedMoves, elementCoordinates)
+      print(elementCoordinates)
+
   
   #check whether the mouse in in the grid
   def In_grid(self,x,y):
@@ -211,8 +160,8 @@ def isInDimension(screenX, screenY, boxWidth, boxHeight, mouseX, mouseY):
 
 # Specific-Use Variables
 inventory = Inventory()
-selectedMove = None
 selected = None
+selectedMove = None
 optique = False
 running = True
 
@@ -241,16 +190,16 @@ while running:
         if ev.button == 1:
           # Check if clicked Button1
           if isInDimension(button1['screenX'], button1['screenY'], button1['boxWidth'], button1['boxHeight'], mouse[0], mouse[1]):
-            selected = [Item(0),0]
+            selected = [Item(0),1]
           # Check if clicked Button2
           if isInDimension(button2['screenX'], button2['screenY'], button2['boxWidth'], button2['boxHeight'], mouse[0], mouse[1]):
-            selected = [Item(1),0]
+            selected = [Item(1),1]
           # Check if clicked Button3
           if isInDimension(button3['screenX'], button3['screenY'], button3['boxWidth'], button3['boxHeight'], mouse[0], mouse[1]):
-            selected = [Item(2),0]
+            selected = [Item(2),1]
           # Check if clicked Button4
           if isInDimension(button4['screenX'], button4['screenY'], button4['boxWidth'], button4['boxHeight'], mouse[0], mouse[1]):
-            selected = [Item(3),0]
+            selected = [Item(3),1]
           # Check if clicked Button4
           if isInDimension(button5['screenX'], button5['screenY'], button5['boxWidth'], button5['boxHeight'], mouse[0], mouse[1]):
             print("Entered Button")
@@ -283,13 +232,8 @@ while running:
             my_list[0] +=1
             my_tuple = tuple(my_list)
             posInv = my_tuple
-            selectedMoves = inventory.Check_adjacent(posInv[0], posInv[1])
-            if (len(selectedMoves[0])-1 > 0):
-              for i in range(len(selectedMoves[0])-1):
-                inventory.Add(selectedMoves[0][0],selectedMoves[1])
-            else:
-              inventory.Add(selectedMove,posInv)
-            print(selectedMoves)
+            inventory.Add(selectedMove,posInv)
+            inventory.Check_adjacent(posInv[0], posInv[1])
             #selected= None
           if ev.key == pygame.K_LEFT:
             inventory.items[posInv[0]][posInv[1]] = None
@@ -297,13 +241,8 @@ while running:
             my_list[0] -=1
             my_tuple = tuple(my_list)
             posInv = my_tuple
-            selectedMoves = inventory.Check_adjacent(posInv[0], posInv[1])
-            if (len(selectedMoves[0])-1 > 0):
-              for i in range(len(selectedMoves[0])-1):
-                inventory.Add(selectedMoves[0][0],selectedMoves[1])
-            else:
-              inventory.Add(selectedMove,posInv)
-            print(selectedMoves)
+            inventory.Add(selectedMove,posInv)
+            inventory.Check_adjacent(posInv[0], posInv[1])
             #selected= None
           if ev.key == pygame.K_DOWN:
             inventory.items[posInv[0]][posInv[1]] = None
@@ -311,13 +250,8 @@ while running:
             my_list[1] +=1
             my_tuple = tuple(my_list)
             posInv = my_tuple
-            selectedMoves = inventory.Check_adjacent(posInv[0], posInv[1])
-            if (len(selectedMoves[0])-1 > 0):
-              for i in range(len(selectedMoves[0])-1):
-                inventory.Add(selectedMoves[0][0],selectedMoves[1])
-            else:
-              inventory.Add(selectedMove,posInv)
-            print(selectedMoves)
+            inventory.Add(selectedMove,posInv)
+            inventory.Check_adjacent(posInv[0], posInv[1])
             #selected= None
           if ev.key == pygame.K_UP:
             inventory.items[posInv[0]][posInv[1]] = None
@@ -325,13 +259,8 @@ while running:
             my_list[1] -=1
             my_tuple = tuple(my_list)
             posInv = my_tuple
-            selectedMoves = inventory.Check_adjacent(posInv[0], posInv[1])
-            if (len(selectedMoves[0])-1 > 0):
-              for i in range(len(selectedMoves[0])-1):
-                inventory.Add(selectedMoves[0][0],selectedMoves[1])
-            else:
-              inventory.Add(selectedMove,posInv)
-            print(selectedMoves)
+            inventory.Add(selectedMove,posInv)
+            inventory.Check_adjacent(posInv[0], posInv[1])
             
           if ev.key == pygame.K_RETURN:
             selectedMove = None

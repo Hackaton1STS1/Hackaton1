@@ -12,14 +12,19 @@ import time
 from modules.undo import Undo
 myUndo = Undo()
 a = []
+b = []
+c = []
 
+# Verifies last direction of undo
+d = []
 
 # initializing the constructor
 pygame.init()
+clock = pygame.time.Clock()
 mouse = pygame.mouse.get_pos()
 
 # screen resolution
-res = (600,600)
+res = (900,600)
 screen = pygame.display.set_mode(res)
   
 # colors & fonts
@@ -46,6 +51,18 @@ pygame.draw.circle(items[0],color_red,(25,25),25)
 pygame.draw.circle(items[1],color_green,(25,25),25)
 pygame.draw.circle(items[2],color_blue,(25,25),25)
 pygame.draw.circle(items[3],color_yellow,(25,25),25)
+
+squares = [pygame.Surface((50,50),pygame.SRCALPHA) for x in range(4)]
+pygame.draw.rect(squares[0],color_red, pygame.Rect(25,25, 25, 25))
+pygame.draw.rect(squares[1],color_green,pygame.Rect(25,25, 25, 25))
+pygame.draw.rect(squares[2],color_blue,pygame.Rect(25,25, 25, 25))
+pygame.draw.rect(squares[3],color_yellow,pygame.Rect(25,25, 25, 25))
+
+def draw_rect_alpha(surface, color, rect):
+  shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
+  pygame.draw.rect(shape_surf, color, shape_surf.get_rect())
+  surface.blit(shape_surf, rect)
+
 
 # Dropdown class
 class DropDown():
@@ -97,6 +114,13 @@ class DropDown():
                   return self.active_option
       return -1
 
+# Block class
+class Block:
+  def __init__(self, x_pos, y_pos):
+    self.x = x_pos
+    self.y = y_pos
+    self.surface = squares[0]
+
 # Item class
 class Item:
     def __init__(self,id):
@@ -105,6 +129,15 @@ class Item:
     
     def resize(self,size):
         return pygame.transform.scale(self.surface,(size,size))
+
+# Square class
+class Square:
+  def __init__(self,id):
+      self.id = id
+      self.surface = squares[id]
+  
+  def resize(self,size):
+      return pygame.transform.scale(self.surface,(size,size))
 
 # Inventory class holding items
 class Inventory:
@@ -117,6 +150,8 @@ class Inventory:
       self.x = 0
       self.y = 0
       self.border = 3
+      self.block = Block(self.x, self.y)
+      self.body = [Block(40, 80), Block(80, 80), Block(120, 80), Block(40, 120), Block(80, 120), Block(120, 120), Block(40, 160), Block(80, 160), Block(120, 160)]
   
   #draw everything
   def draw(self):
@@ -139,7 +174,9 @@ class Inventory:
                   screen.blit(self.items[x][y][0].resize(self.box_size),rect)
                   obj = font.render(str(self.items[x][y][1]),True,(0,0,0))
                   screen.blit(obj,(rect[0] + self.box_size//2, rect[1] + self.box_size//2))
-
+      for block in self.body:
+        block_rect = pygame.Rect( block.x+6, block.y+9, self.box_size+6, self.box_size+6)
+        draw_rect_alpha(screen, (255, 0, 0, 60), block_rect)
 
   #get the square that the mouse is over
   def Get_pos(self):
@@ -153,19 +190,19 @@ class Inventory:
 
   #delete selectionned item last position
   def Del(self,Item,xy):
-    print("test")
+    print("test delete")
     items[xy[0]][xy[1]] = None
 
   #add an item/s
   def Add(self,Item,xy):
       x, y = xy
-      if self.items[x][y]:
-            print(self.foreignIdIncrement)
+      if self.items[x][y] != None:
             self.items[x][y][1] = self.foreignIdIncrement
             temp = self.items[x][y]
             self.items[x][y] = Item
             return temp
       else:
+          print(Item)
           self.items[x][y] = Item
           self.items[x][y][1] = self.foreignIdIncrement
   
@@ -229,11 +266,10 @@ while running:
         obj = font.render(str(selected[1]),True,(0,0,0))
         screen.blit(obj,(mousex + 15, mousey + 15))  
 
-
-
     for ev in pygame.event.get():
       if ev.type == pygame.QUIT:
           pygame.quit()
+
       ## MAIN AREA
       if ev.type == pygame.MOUSEBUTTONUP:
         posInv = inventory.Get_pos()
@@ -251,10 +287,46 @@ while running:
           # Check if clicked Button4
           if isInDimension(button4['screenX'], button4['screenY'], button4['boxWidth'], button4['boxHeight'], mouse[0], mouse[1]):
             selected = [Item(3),0]
-          # Check if clicked Button4
-          if isInDimension(button5['screenX'], button5['screenY'], button5['boxWidth'], button5['boxHeight'], mouse[0], mouse[1]):
-            print("Entered Button")
-            
+
+          # Check if clicked Button6
+          if isInDimension(button6['screenX'], button6['screenY'], button6['boxWidth'], button6['boxHeight'], mouse[0], mouse[1]):
+            myUndo.undo()
+            undoC = (myUndo.undoCount())-1
+            a1 = a[undoC-1][0]
+            a2 = a[undoC-1][1]
+            posInvUndo = (a1,a2)
+            my_list = list(posInvUndo)
+            print (c[0][0])
+            if inventory.In_grid(my_list[0],my_list[1]):
+              if len(b)>=2 and len(c)>=0 and len(d)>=0:
+                # selectedMove2 = inventory.items[my_list[0]][my_list[1]]
+                selectedMove2 = b[0]
+                inventory.Add(selectedMove2,a[(myUndo.undoCount())-1])
+                #delete last item depending on direction choosed
+                #Up
+                print(d)
+                print(d[-1])
+                if(d[-1]==1):
+                    inventory.items[a[(myUndo.undoCount())-1][0]][(a[(myUndo.undoCount())-1][1])+1] = None
+                    del d[-1]
+                #Down
+                elif (d[-1]==2):
+                    inventory.items[a[(myUndo.undoCount())-1][0]][(a[(myUndo.undoCount())-1][1])-1] = None
+                    del d[-1]
+                #Left
+                elif (d[-1]==3):
+                    inventory.items[(a[(myUndo.undoCount())-1][0])+1][a[(myUndo.undoCount())-1][1]] = None
+                    del d[-1]
+                #Right
+                elif (d[-1]==4):
+                    inventory.items[(a[(myUndo.undoCount())-1][0])-1][a[(myUndo.undoCount())-1][1]] = None
+                    del d[-1]
+                # print((a[(myUndo.undoCount())-1][0])+1,(a[(myUndo.undoCount())-1][0]))
+                #inventory.items[a[(myUndo.undoCount())][0]][a[(myUndo.undoCount())][1]] = None
+                my_tuple = tuple(my_list)
+          # Check if clicked Button7
+          if isInDimension(button7['screenX'], button7['screenY'], button7['boxWidth'], button7['boxHeight'], mouse[0], mouse[1]):
+            print("Redo Button!")
       if ev.type == pygame.MOUSEBUTTONDOWN:
           posInv = inventory.Get_pos()
           # If Buttondown is Mouse1
@@ -277,84 +349,102 @@ while running:
       if ev.type == pygame.KEYDOWN:
         if selectedMove != None:
           if ev.key == pygame.K_RIGHT:
-            #inventory.Del(selected,posInv)
+            uColor = inventory.items[posInv[0]][posInv[1]]
             inventory.items[posInv[0]][posInv[1]] = None
             my_list = list(posInv)
             my_list[0] +=1
             my_tuple = tuple(my_list)
             posInv = my_tuple
             selectedMoves = inventory.Check_adjacent(posInv[0], posInv[1])
-            if (len(selectedMoves[0])-1 > 0):
-              for i in range(len(selectedMoves[0])-1):
-                inventory.Add(selectedMoves[0][0],selectedMoves[1])
-            else:
-              inventory.Add(selectedMove,posInv)
+           
+            # Undo Redo
+            myUndo(a.append, [posInv], [], "last position", a.pop)
+            b.append(uColor)
+            c.append(selectedMove)
+            d.append(4)
+
+            #if (len(selectedMoves[0]) > 0):
+              #for i in range(len(selectedMoves[0])-1):
+                #print(selectedMoves[0][0])
+                #inventory.Add(selectedMoves[0][0],tuple(selectedMoves[1][i]))
+            #else:
+            inventory.Add(selectedMove,posInv)
             print(selectedMoves)
             #selected= None
           if ev.key == pygame.K_LEFT:
+            uColor = inventory.items[posInv[0]][posInv[1]]
             inventory.items[posInv[0]][posInv[1]] = None
             my_list = list(posInv)
             my_list[0] -=1
             my_tuple = tuple(my_list)
             posInv = my_tuple
             selectedMoves = inventory.Check_adjacent(posInv[0], posInv[1])
-            if (len(selectedMoves[0])-1 > 0):
-              for i in range(len(selectedMoves[0])-1):
-                inventory.Add(selectedMoves[0][0],selectedMoves[1])
-            else:
-              inventory.Add(selectedMove,posInv)
+            
+            # Undo Redo
+            myUndo(a.append, [posInv], [], "last position", a.pop)
+            b.append(uColor)
+            c.append(selectedMove)
+            d.append(3)
+            
+            #if (len(selectedMoves[0]) > 0):
+              #for i in range(len(selectedMoves[0])-1):
+                #inventory.Add(selectedMoves[0][0],tuple(selectedMoves[1][i]))
+            #else:
+            inventory.Add(selectedMove,posInv)
             print(selectedMoves)
             #selected= None
           if ev.key == pygame.K_DOWN:
+            uColor = inventory.items[posInv[0]][posInv[1]]
             inventory.items[posInv[0]][posInv[1]] = None
             my_list = list(posInv)
             my_list[1] +=1
             my_tuple = tuple(my_list)
             posInv = my_tuple
             selectedMoves = inventory.Check_adjacent(posInv[0], posInv[1])
-            if (len(selectedMoves[0])-1 > 0):
-              for i in range(len(selectedMoves[0])-1):
-                inventory.Add(selectedMoves[0][0],selectedMoves[1])
-            else:
-              inventory.Add(selectedMove,posInv)
+            
+            # Undo Redo
+            myUndo(a.append, [posInv], [], "last position", a.pop)
+            b.append(uColor)
+            c.append(selectedMove)
+            d.append(2)
+
+            #if (len(selectedMoves[0]) > 0):
+              #for i in range(len(selectedMoves[0])-1):
+                #inventory.Add(selectedMoves[0][0],tuple(selectedMoves[1][i]))
+            #else:
+            inventory.Add(selectedMove,posInv)
             print(selectedMoves)
             #selected= None
           if ev.key == pygame.K_UP:
+            uColor = inventory.items[posInv[0]][posInv[1]]
             inventory.items[posInv[0]][posInv[1]] = None
             my_list = list(posInv)
             my_list[1] -=1
             my_tuple = tuple(my_list)
             posInv = my_tuple
             selectedMoves = inventory.Check_adjacent(posInv[0], posInv[1])
-            if (len(selectedMoves[0])-1 > 0):
-              for i in range(len(selectedMoves[0])-1):
-                inventory.Add(selectedMoves[0][0],selectedMoves[1])
-            else:
-              inventory.Add(selectedMove,posInv)
+            
+            # Undo Redo
+            myUndo(a.append, [posInv], [], "last position", a.pop)
+            b.append(uColor)
+            c.append(selectedMove)
+            d.append(1)
+
+            #if (len(selectedMoves[0]) > 0):
+              #for i in range(len(selectedMoves[0])-1):
+                #inventory.Add(selectedMoves[0][0],tuple(selectedMoves[1][i]))
+            #else:
+            inventory.Add(selectedMove,posInv)
             print(selectedMoves)
             
           if ev.key == pygame.K_RETURN:
             selectedMove = None
 
-                
-            
-                # print(inventory.Get_pos())
-            # TODO: Selectionner la goutte de la grille
-            # Puis de déplacer les gouttes avec les flèches
-            # Droite, Gauche, bas et haut
-          
-            #     selected = inventory.Add(selected,posInv)
-            # elif inventory.items[posInv[0]][posInv[1]]:
-            #     selected = inventory.items[posInv[0]][posInv[1]]
-            #     inventory.items[posInv[0]][posInv[1]] = None
-                    
-    ## Out of the event detector
-    #-
-    # stores the (x,y) coordinates into
-    # the variable as a tuple
     mouse = pygame.mouse.get_pos()
-      
-    # creates pressable boxes in specific areas
+    #####################################################
+    #(Buttons) creates pressable boxes in specific areas#
+    #####################################################
+
     button1 = {'screenX': 0, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
     if isInDimension(button1['screenX'], button1['screenY'], button1['boxWidth'], button1['boxHeight'], mouse[0], mouse[1]):
         pygame.draw.rect(screen,color_red,[button1['screenX'],button1['screenY'],button1['boxWidth'],button1['boxHeight']])
@@ -385,7 +475,21 @@ while running:
     else:
         pygame.draw.rect(screen,color_dark,[button5['screenX'],button5['screenY'],button5['boxWidth'],button5['boxHeight']])
 
-
+    button6 = {'screenX':500, 'screenY': 400, 'boxWidth': 100, 'boxHeight': 40}
+    if isInDimension(button6['screenX'],button6['screenY'], button6['boxWidth'], button6['boxHeight'], mouse[0], mouse[1]):
+        pygame.draw.rect(screen,color_red,[button6['screenX'],button6['screenY'],button6['boxWidth'],button6['boxHeight']])
+        screen.blit(font.render('Undo', True, (0, 0, 0)), (button6['screenX'], button6['screenY']))
+    else:
+        pygame.draw.rect(screen,color_yellow,[button6['screenX'], button6['screenY'], button6['boxWidth'], button6['boxHeight']])
+        screen.blit(font.render('Undo', True, (0, 0, 0)), (button6['screenX'], button6['screenY']))
+    
+    button7 = {'screenX':500, 'screenY': 500, 'boxWidth': 100, 'boxHeight': 40}
+    if isInDimension(button7['screenX'],button7['screenY'], button7['boxWidth'], button7['boxHeight'], mouse[0], mouse[1]):
+        pygame.draw.rect(screen,color_red,[button7['screenX'],button7['screenY'],button7['boxWidth'],button7['boxHeight']])
+        screen.blit(font.render('Redo', True, (0, 0, 0)), (button7['screenX'], button7['screenY']))
+    else:
+        pygame.draw.rect(screen,color_yellow,[button7['screenX'], button7['screenY'], button7['boxWidth'], button6['boxHeight']])
+        screen.blit(font.render('Redo', True, (0, 0, 0)), (button7['screenX'], button7['screenY']))
 
 
     # updates the frames of the game
