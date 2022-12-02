@@ -343,7 +343,7 @@ while running:
                 if inventory.In_grid(my_list[0],my_list[1]):
                   if len(b)>=2 and len(c)>=0 and len(e)>=0:
                     selectedMove2 = b[0]
-                    inventory.Add(selectedMove2,a[(myUndo.redoCount())-1])
+                    #Up
                     if(e[-1]==1):
                         inventory.items[a[(myUndo.undoCount())-1][0]][(a[(myUndo.undoCount())-1][1])+1] = None
                         del e[-1]
@@ -357,8 +357,11 @@ while running:
                         del e[-1]
                     #Right
                     elif (d[-1]==4):
-                        inventory.items[(a[(myUndo.undoCount())-1][0])-1][a[(myUndo.undoCount())-1][1]] = None
+                        print("testdwvesfsef______________")
+                        print(a[(myUndo.undoCount())-1])
+                        inventory.items[(a[(myUndo.undoCount())-1][0])+1][a[(myUndo.undoCount())-1][1]] = None
                         del e[-1]
+                    inventory.Add(selectedMove2,a[(myUndo.redoCount())-1])
                 # myUndo.redo()
                 # redoC = (myUndo.redoCount())-1
                 # a1 = a[undoC-1][0]
