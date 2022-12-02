@@ -26,7 +26,7 @@ clock = pygame.time.Clock()
 mouse = pygame.mouse.get_pos()
 
 # screen resolution
-res = (900,600)
+res = (390,450)
 screen = pygame.display.set_mode(res)
   
 # colors & fonts
@@ -461,37 +461,37 @@ while running:
     #(Buttons) creates pressable boxes in specific areas#
     #####################################################
 
-    button1 = {'screenX': 0, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
+    button1 = {'screenX': 10, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
     if isInDimension(button1['screenX'], button1['screenY'], button1['boxWidth'], button1['boxHeight'], mouse[0], mouse[1]):
         pygame.draw.rect(screen,color_red,[button1['screenX'],button1['screenY'],button1['boxWidth'],button1['boxHeight']])
     else:
         pygame.draw.rect(screen,color_red_hovered,[button1['screenX'],button1['screenY'],button1['boxWidth'],button1['boxHeight']])
 
-    button2 = {'screenX': 60, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
+    button2 = {'screenX': 70, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
     if isInDimension(button2['screenX'], button2['screenY'], button2['boxWidth'], button2['boxHeight'], mouse[0], mouse[1]):
         pygame.draw.rect(screen,color_green,[button2['screenX'],button2['screenY'],button2['boxWidth'],button2['boxHeight']])
     else:
         pygame.draw.rect(screen,color_green_hovered,[button2['screenX'],button2['screenY'],button2['boxWidth'],button2['boxHeight']])
 
-    button3 = {'screenX': 120, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
+    button3 = {'screenX': 130, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
     if isInDimension(button3['screenX'], button3['screenY'], button3['boxWidth'], button3['boxHeight'], mouse[0], mouse[1]):
         pygame.draw.rect(screen,color_blue,[button3['screenX'],button3['screenY'],button3['boxWidth'],button3['boxHeight']])
     else:
         pygame.draw.rect(screen,color_blue_hovered,[button3['screenX'],button3['screenY'],button3['boxWidth'],button3['boxHeight']])
 
-    button4 = {'screenX': 180, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
+    button4 = {'screenX': 190, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
     if isInDimension(button4['screenX'], button4['screenY'], button4['boxWidth'], button4['boxHeight'], mouse[0], mouse[1]):
         pygame.draw.rect(screen,color_yellow,[button4['screenX'],button4['screenY'],button4['boxWidth'],button4['boxHeight']])
     else:
         pygame.draw.rect(screen,color_yellow_hovered,[button4['screenX'],button4['screenY'],button4['boxWidth'],button4['boxHeight']])
 
-#    button5 = {'screenX': 240, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
+#    button5 = {'screenX': 250, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
 #    if isInDimension(button5['screenX'], button5['screenY'], button5['boxWidth'], button5['boxHeight'], mouse[0], mouse[1]):
 #        pygame.draw.rect(screen,color_dark,[button5['screenX'],button5['screenY'],button5['boxWidth'],button5['boxHeight']])
 #    else:
 #        pygame.draw.rect(screen,color_dark,[button5['screenX'],button5['screenY'],button5['boxWidth'],button5['boxHeight']])
 
-    button6 = {'screenX':290, 'screenY': 400, 'boxWidth': 100, 'boxHeight': 40}
+    button6 = {'screenX':260, 'screenY': 400, 'boxWidth': 100, 'boxHeight': 40}
     if isInDimension(button6['screenX'],button6['screenY'], button6['boxWidth'], button6['boxHeight'], mouse[0], mouse[1]):
         pygame.draw.rect(screen,color_gray,[button6['screenX'],button6['screenY'],button6['boxWidth'],button6['boxHeight']])
         screen.blit(font.render('Undo', True, (0, 0, 0)), (button6['screenX'], button6['screenY']))
