@@ -31,14 +31,15 @@ screen = pygame.display.set_mode(res)
   
 # colors & fonts
 color = (255,255,255)
-color_light = (170,170,170)
+color_light = (255,255,255)
+color_gray = (170,170,170)
 color_dark = (100,100,100)
 color_red = (255,0,0)
 color_red_hovered = (200,0,0)
 color_green = (0,255,0)
 color_green_hovered = (0,200,0)
-color_blue = (0,0,255)
-color_blue_hovered = (0,0,200)
+color_blue = (200,200,255)
+color_blue_hovered = (100,100,200)
 color_yellow = (255,255,0)
 color_yellow_hovered = (200,200,0)
 font = pygame.font.Font(pygame.font.match_font("calibri"),26)
@@ -337,43 +338,47 @@ while running:
 
           # Check if clicked Button6
           if isInDimension(button6['screenX'], button6['screenY'], button6['boxWidth'], button6['boxHeight'], mouse[0], mouse[1]):
-            myUndo.undo()
-            undoC = (myUndo.undoCount())-1
-            a1 = a[undoC-1][0]
-            a2 = a[undoC-1][1]
-            posInvUndo = (a1,a2)
-            my_list = list(posInvUndo)
-            print (c[0][0])
-            if inventory.In_grid(my_list[0],my_list[1]):
-              if len(b)>=2 and len(c)>=0 and len(d)>=0:
-                # selectedMove2 = inventory.items[my_list[0]][my_list[1]]
-                selectedMove2 = b[0]
-                inventory.Add(selectedMove2,a[(myUndo.undoCount())-1])
-                #delete last item depending on direction choosed
-                #Up
-                print(d)
-                print(d[-1])
-                if(d[-1]==1):
-                    inventory.items[a[(myUndo.undoCount())-1][0]][(a[(myUndo.undoCount())-1][1])+1] = None
-                    del d[-1]
-                #Down
-                elif (d[-1]==2):
-                    inventory.items[a[(myUndo.undoCount())-1][0]][(a[(myUndo.undoCount())-1][1])-1] = None
-                    del d[-1]
-                #Left
-                elif (d[-1]==3):
-                    inventory.items[(a[(myUndo.undoCount())-1][0])+1][a[(myUndo.undoCount())-1][1]] = None
-                    del d[-1]
-                #Right
-                elif (d[-1]==4):
-                    inventory.items[(a[(myUndo.undoCount())-1][0])-1][a[(myUndo.undoCount())-1][1]] = None
-                    del d[-1]
-                # print((a[(myUndo.undoCount())-1][0])+1,(a[(myUndo.undoCount())-1][0]))
-                #inventory.items[a[(myUndo.undoCount())][0]][a[(myUndo.undoCount())][1]] = None
-                my_tuple = tuple(my_list)
-          # Check if clicked Button7
-          if isInDimension(button7['screenX'], button7['screenY'], button7['boxWidth'], button7['boxHeight'], mouse[0], mouse[1]):
-            print("Redo Button!")
+            if myUndo.undoCount()>=2 :
+                myUndo.undo()
+                undoC = (myUndo.undoCount())-1
+                a1 = a[undoC-1][0]
+                a2 = a[undoC-1][1]
+                posInvUndo = (a1,a2)
+                my_list = list(posInvUndo)
+						   
+                if inventory.In_grid(my_list[0],my_list[1]):
+                  if len(b)>=2 and len(c)>=0 and len(d)>=0:
+                    # selectedMove2 = inventory.items[my_list[0]][my_list[1]]
+                    selectedMove2 = b[0]
+                    selectedMove = inventory.Add(selectedMove2,a[(myUndo.undoCount())-1])
+                    #delete last item depending on direction choosed
+                    #Up
+                    if(d[-1]==1):
+                        inventory.items[a[(myUndo.undoCount())-1][0]][(a[(myUndo.undoCount())-1][1])-1] = None
+                        e.append(1)
+                        del d[-1]
+                    #Down
+                    elif (d[-1]==2):
+                        inventory.items[a[(myUndo.undoCount())-1][0]][(a[(myUndo.undoCount())-1][1])+1] = None
+                        e.append(2)
+                        del d[-1]
+                    #Left
+                    elif (d[-1]==3):
+                        inventory.items[(a[(myUndo.undoCount())-1][0])-1][a[(myUndo.undoCount())-1][1]] = None
+                        e.append(3)
+                        del d[-1]
+                    #Right
+                    elif (d[-1]==4):
+                        inventory.items[(a[(myUndo.undoCount())-1][0])+1][a[(myUndo.undoCount())-1][1]] = None
+                        e.append(4)
+                        del d[-1]
+                    # print((a[(myUndo.undoCount())-1][0])+1,(a[(myUndo.undoCount())-1][0]))
+                    #inventory.items[a[(myUndo.undoCount())][0]][a[(myUndo.undoCount())][1]] = None
+                    my_tuple = tuple(my_list)
+                  
+            else:
+                print("Aucune action à annuler")
+
       if ev.type == pygame.MOUSEBUTTONDOWN:
           posInv = inventory.Get_pos()
           # If Buttondown is Mouse1
@@ -480,27 +485,28 @@ while running:
     else:
         pygame.draw.rect(screen,color_yellow_hovered,[button4['screenX'],button4['screenY'],button4['boxWidth'],button4['boxHeight']])
 
-    button5 = {'screenX': 240, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
-    if isInDimension(button5['screenX'], button5['screenY'], button5['boxWidth'], button5['boxHeight'], mouse[0], mouse[1]):
-        pygame.draw.rect(screen,color_dark,[button5['screenX'],button5['screenY'],button5['boxWidth'],button5['boxHeight']])
-    else:
-        pygame.draw.rect(screen,color_dark,[button5['screenX'],button5['screenY'],button5['boxWidth'],button5['boxHeight']])
+#    button5 = {'screenX': 240, 'screenY': 400, 'boxWidth': 40, 'boxHeight': 40}
+#    if isInDimension(button5['screenX'], button5['screenY'], button5['boxWidth'], button5['boxHeight'], mouse[0], mouse[1]):
+#        pygame.draw.rect(screen,color_dark,[button5['screenX'],button5['screenY'],button5['boxWidth'],button5['boxHeight']])
+#    else:
+#        pygame.draw.rect(screen,color_dark,[button5['screenX'],button5['screenY'],button5['boxWidth'],button5['boxHeight']])
 
-    button6 = {'screenX':500, 'screenY': 400, 'boxWidth': 100, 'boxHeight': 40}
+    button6 = {'screenX':290, 'screenY': 400, 'boxWidth': 100, 'boxHeight': 40}
     if isInDimension(button6['screenX'],button6['screenY'], button6['boxWidth'], button6['boxHeight'], mouse[0], mouse[1]):
-        pygame.draw.rect(screen,color_red,[button6['screenX'],button6['screenY'],button6['boxWidth'],button6['boxHeight']])
+        pygame.draw.rect(screen,color_gray,[button6['screenX'],button6['screenY'],button6['boxWidth'],button6['boxHeight']])
         screen.blit(font.render('Undo', True, (0, 0, 0)), (button6['screenX'], button6['screenY']))
     else:
-        pygame.draw.rect(screen,color_yellow,[button6['screenX'], button6['screenY'], button6['boxWidth'], button6['boxHeight']])
+        pygame.draw.rect(screen,color_light,[button6['screenX'], button6['screenY'], button6['boxWidth'], button6['boxHeight']])
         screen.blit(font.render('Undo', True, (0, 0, 0)), (button6['screenX'], button6['screenY']))
-    
-    button7 = {'screenX':500, 'screenY': 500, 'boxWidth': 100, 'boxHeight': 40}
-    if isInDimension(button7['screenX'],button7['screenY'], button7['boxWidth'], button7['boxHeight'], mouse[0], mouse[1]):
-        pygame.draw.rect(screen,color_red,[button7['screenX'],button7['screenY'],button7['boxWidth'],button7['boxHeight']])
-        screen.blit(font.render('Redo', True, (0, 0, 0)), (button7['screenX'], button7['screenY']))
-    else:
-        pygame.draw.rect(screen,color_yellow,[button7['screenX'], button7['screenY'], button7['boxWidth'], button6['boxHeight']])
-        screen.blit(font.render('Redo', True, (0, 0, 0)), (button7['screenX'], button7['screenY']))
+
+# Redo Button    
+#    button7 = {'screenX':500, 'screenY': 500, 'boxWidth': 100, 'boxHeight': 40}
+#    if isInDimension(button7['screenX'],button7['screenY'], button7['boxWidth'], button7['boxHeight'], mouse[0], mouse[1]):
+#        pygame.draw.rect(screen,color_red,[button7['screenX'],button7['screenY'],button7['boxWidth'],button7['boxHeight']])
+#        screen.blit(font.render('Redo', True, (0, 0, 0)), (button7['screenX'], button7['screenY']))
+#    else:
+#        pygame.draw.rect(screen,color_yellow,[button7['screenX'], button7['screenY'], button7['boxWidth'], button6['boxHeight']])
+#        screen.blit(font.render('Redo', True, (0, 0, 0)), (button7['screenX'], button7['screenY']))
 
 
     # updates the frames of the game
